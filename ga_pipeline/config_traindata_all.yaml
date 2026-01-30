@@ -1,0 +1,55 @@
+version: 1
+dataset:
+  keys:
+    left_id: id_cidacs_a
+    right_id: id_cidacs_b
+  label: match_status
+  fields:
+    nome:
+      left: nome_a
+      right: nome_b
+      sim: jaro_winkler
+      weight:
+        low: 0.0
+        high: 6.0
+        step: 0.05
+      penalty:
+        low: 0.0
+        high: 1.0
+        step: 0.01
+    nome_mae:
+      left: nome_mae_a
+      right: nome_mae_b
+      sim: jaro_winkler
+      weight:
+        low: 0.0
+        high: 6.0
+        step: 0.05
+      penalty:
+        low: 0.0
+        high: 1.0
+        step: 0.01
+    dt_nasc:
+      left: dt_nasc_a
+      right: dt_nasc_b
+      sim: hamming
+      weight:
+        low: 0.0
+        high: 6.0
+        step: 0.05
+      penalty:
+        low: 0.0
+        high: 1.0
+        step: 0.01
+    sexo:
+      left: sexo_a
+      right: sexo_b
+      sim: overlap
+      weight:
+        low: 0.0
+        high: 6.0
+        step: 0.05
+      penalty:
+        low: 0.0
+        high: 1.0
+        step: 0.01

@@ -1,4 +1,7 @@
 # Comandos: 
+#rm -fv docker-compose.yml 
+#mv -fv 1_medium_docker-compose.yml docker-compose.yml
+
 # 1: rebuild das imagens mesmo que nada tenha mudado
 docker compose build --no-cache
 docker compose up --force-recreate --remove-orphans

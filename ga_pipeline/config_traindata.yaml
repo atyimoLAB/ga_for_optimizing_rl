@@ -1,0 +1,31 @@
+version: 1
+dataset:
+  keys:
+    left_id: id_cidacs_a
+    right_id: id_cidacs_b
+  label: match_status
+  fields:
+    nome:
+      left: nome_a
+      right: nome_b
+      sim: jaro_winkler
+      weight: 1
+      penalty: 0.1
+    nome_mae:
+      left: nome_mae_a
+      right: nome_mae_b
+      sim: jaro_winkler
+      weight: 1
+      penalty: 0.1
+    dt_nasc:
+      left: dt_nasc_a
+      right: dt_nasc_b
+      sim: hamming
+      weight: 1
+      penalty: 0.1
+    sexo:
+      left: sexo_a
+      right: sexo_b
+      sim: overlap
+      weight: 1
+      penalty: 0.1

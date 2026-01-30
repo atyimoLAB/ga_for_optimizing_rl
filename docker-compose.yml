@@ -1,6 +1,6 @@
 services:
   barravento:
-    build: ./barravento/0_small
+    build: ./barravento/1_medium
     container_name: barravento
     ports:
       - "7077:7077"
@@ -16,14 +16,14 @@ services:
     networks:
       - cluster_net
   jardimdealah:
-    build: ./jardimdealah/0_small
+    build: ./jardimdealah/1_medium
     container_name: jardimdealah
     volumes:
       - ./requirements_python.txt:/root/requirements_python.txt:ro
     networks:
       - cluster_net
   stellamaris:
-    build: ./stellamaris/0_small
+    build: ./stellamaris/1_medium
     container_name: stellamaris
     volumes:
       - ./requirements_python.txt:/root/requirements_python.txt:ro
