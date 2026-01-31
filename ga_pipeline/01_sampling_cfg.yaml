@@ -1,0 +1,42 @@
+query:
+  max_candidates: 10
+  source_fields: ["nome", "nome_mae", "dt_nasc", "sexo", "municipio_res"]
+  fields:
+    - col: "nome"
+      es_field: "nome"
+      type: "match"
+      fuzziness: "AUTO"
+      boost: 3.0
+      operator: "AND"
+    - col: "nome_mae"
+      es_field: "nome_mae"
+      type: "match"
+      fuzziness: "AUTO"
+      boost: 2.0
+      operator: "AND"
+    - col: "dt_nasc"
+      es_field: "dt_nasc"
+      type: "term"
+      boost: 2.0
+    - col: "sexo"
+      es_field: "sexo"
+      type: "term"
+      boost: 1.0
+    - col: "municipio_res"
+      es_field: "municipio_res"
+      type: "term"
+      boost: 1.0
+
+sampling:
+  position_distribution_pct:
+    "1": 55
+    "2": 20
+    "3": 10
+    "4": 7
+    "5": 4
+    "6": 2
+    "7": 1
+    "8": 1
+  seed: 42
+  fallback_when_short:
+    mode: "last_available"   # options: null | last_available | first_available
