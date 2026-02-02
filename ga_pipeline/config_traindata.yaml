@@ -1,31 +1,58 @@
+# ============================================================
+# Versão do esquema de configuração
+# ============================================================
 version: 1
+
 dataset:
+  # ----------------------------------------------------------
+  # Chaves primárias dos registros em cada lado do linkage
+  # ----------------------------------------------------------
   keys:
-    left_id: id_cidacs_a
-    right_id: id_cidacs_b
+    left_id: id_cidacs_a   # Identificador único do registro na base A (indexada)
+    right_id: id_cidacs_b  # Identificador único do registro na base B (consulta)
+
+  # ----------------------------------------------------------
+  # Coluna de rótulo (ground truth)
+  # 1 = match verdadeiro
+  # 0 = non-match
+  # ----------------------------------------------------------
   label: match_status
+
+  # ----------------------------------------------------------
+  # Campos usados no processo de linkage
+  # Cada campo lógico define:
+  #  - coluna da base A (left)
+  #  - coluna da base B (right)
+  #  - função de similaridade (sim)
+  #  - peso (weight)
+  #  - penalidade associada a discordância (penalty)
+  # ----------------------------------------------------------
   fields:
+
     nome:
-      left: nome_a
-      right: nome_b
-      sim: jaro_winkler
-      weight: 1
-      penalty: 0.1
+      left: nome_a                # Campo "nome" na base A
+      right: nome_b               # Campo "nome" na base B
+      sim: jaro_winkler           # Similaridade textual (JW)
+      weight: 1                   # Peso do campo no score final
+      penalty: 0.1                # Penalidade aplicada em mismatch
+
     nome_mae:
-      left: nome_mae_a
-      right: nome_mae_b
-      sim: jaro_winkler
+      left: nome_mae_a            # Nome da mãe na base A
+      right: nome_mae_b           # Nome da mãe na base B
+      sim: jaro_winkler           # Similaridade textual (JW)
       weight: 1
       penalty: 0.1
+
     dt_nasc:
-      left: dt_nasc_a
-      right: dt_nasc_b
-      sim: hamming
+      left: dt_nasc_a             # Data de nascimento na base A
+      right: dt_nasc_b            # Data de nascimento na base B
+      sim: hamming                # Similaridade exata / posição a posição
       weight: 1
       penalty: 0.1
+
     sexo:
-      left: sexo_a
-      right: sexo_b
-      sim: overlap
+      left: sexo_a                # Sexo na base A
+      right: sexo_b               # Sexo na base B
+      sim: overlap                # Similaridade categórica (igual / diferente)
       weight: 1
       penalty: 0.1

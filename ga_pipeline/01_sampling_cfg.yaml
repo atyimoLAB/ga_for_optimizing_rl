@@ -1,6 +1,30 @@
+# ============================================================
+# Configuração de query no Elasticsearch + sampling do candidato
+# ============================================================
+
 query:
+  # ----------------------------------------------------------
+  # Número máximo de candidatos (hits) retornados por busca
+  # ----------------------------------------------------------
   max_candidates: 10
+
+  # ----------------------------------------------------------
+  # Campos do _source a serem retornados no hit do ES
+  # (se você não precisa do _source para revisão manual,
+  #  pode deixar [] para reduzir payload)
+  # ----------------------------------------------------------
   source_fields: ["nome", "nome_mae", "dt_nasc", "sexo", "municipio_res"]
+
+  # ----------------------------------------------------------
+  # Lista de "features" que entram na query e como são usadas
+  # - col: coluna no DataFrame (lado B / query)
+  # - es_field: campo no índice ES (lado A / index)
+  # - type:
+  #     * match -> match query (texto, pode usar fuzziness)
+  #     * term  -> term query (categoria/exato)
+  # - boost: peso do campo dentro do scoring do ES
+  # - fuzziness / operator: parâmetros apenas para type=match
+  # ----------------------------------------------------------
   fields:
     - col: "nome"
       es_field: "nome"
@@ -8,26 +32,37 @@ query:
       fuzziness: "AUTO"
       boost: 3.0
       operator: "AND"
+
     - col: "nome_mae"
       es_field: "nome_mae"
       type: "match"
       fuzziness: "AUTO"
       boost: 2.0
       operator: "AND"
+
     - col: "dt_nasc"
       es_field: "dt_nasc"
       type: "term"
       boost: 2.0
+
     - col: "sexo"
       es_field: "sexo"
       type: "term"
       boost: 1.0
+
     - col: "municipio_res"
       es_field: "municipio_res"
       type: "term"
       boost: 1.0
 
+
 sampling:
+  # ----------------------------------------------------------
+  # Distribuição de probabilidade para escolher a "posição alvo"
+  # do candidato em es_candidates (1-indexado)
+  #
+  # Exemplo: "1": 55 -> 55% das linhas escolhem o 1º hit
+  # ----------------------------------------------------------
   position_distribution_pct:
     "1": 55
     "2": 20
@@ -37,6 +72,18 @@ sampling:
     "6": 2
     "7": 1
     "8": 1
-  seed: 42
+
+  # ----------------------------------------------------------
+  # Seed para tornar a amostragem reprodutível
+  # ----------------------------------------------------------
+  seed: 2026
+
   fallback_when_short:
-    mode: "last_available"   # options: null | last_available | first_available
+    # --------------------------------------------------------
+    # O que fazer se target_pos > número de hits retornados:
+    #  - null: retorna NULL em es_candidate
+    #  - last_available: usa o último hit disponível
+    #  - first_available: usa o primeiro hit disponível
+    # --------------------------------------------------------
+    mode: "last_available"
+
