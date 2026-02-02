@@ -1,0 +1,98 @@
+# CIDACS-RL GA lab config
+# ----------------------
+# This config drives the whole notebook: data loading, objective metric, GA knobs,
+# search space (gene_space), and surrogate scoring.
+#
+# Tip: keep the search_space DISCRETE (use step) if you want reproducible + exact-ish behavior.
+# If you set format=parquet and experiments_path points to an HDFS folder, it will load all part-*.parquet.
+# If you set format=csv and experiments_path points to an HDFS folder, it will load all part-*.csv.
+
+data:
+  # Where your experiments dataset lives.
+  # Examples:
+  #   - local parquet folder: ./experiments.parquet
+  #   - local csv folder: ./experiments_csv/
+  #   - hdfs parquet folder: hdfs://barravento:9000/data/result/train_dataset_final.parquet
+  experiments_path: "hdfs://barravento:9000/data/result/train_dataset_final.parquet"
+
+  # Dataset format: parquet | csv
+  format: parquet
+
+  # Columns (genes) used by the GA (order matters = gene order)
+  gene_columns:
+    - w_nome
+    - w_nome_mae
+    - w_dt_nasc
+    - w_sexo
+    - p_nome
+    - p_nome_mae
+    - p_dt_nasc
+    - p_sexo
+
+  # Confusion-matrix columns (TP/FP/TN/FN) used to compute objective metrics
+  count_columns:
+    - VP # true_positive
+    - FP # false_positive
+    - VN # true_negative
+    - FN # false_negative
+
+objective:
+  # Metric to maximize: precision | recall | accuracy | f1 | fbeta | balanced_accuracy
+  name: accuracy
+
+  # Extra params for some metrics (only used if needed)
+  params:
+    # only relevant for fbeta
+    beta: 1.0
+
+ga:
+  # RNG seed for reproducibility
+  random_seed: 123
+
+  # GA loop params
+  num_generations: 60
+  sol_per_pop: 30
+  num_parents_mating: 10
+
+  # Parent selection
+  parent_selection_type: tournament
+  # Only used for tournament selection in PyGAD
+  K_tournament: 3
+
+  # Survivors / elitism-ish behavior
+  keep_parents: 2
+
+  # Genetic operators
+  crossover_type: single_point
+  mutation_type: random
+  mutation_percent_genes: 20
+
+  # Optional stop rules (PyGAD style)
+  # Examples:
+  #   - reach_0.98  -> stop if best fitness reaches 0.98
+  stop_criteria:
+    - reach_0.98
+
+search_space:
+  # Each gene is discretized by [low, high] + step.
+  # Keep step aligned with how you generated the experiments table (important for exact lookup).
+  w_nome: {low: 0.0, high: 3.0, step: 0.05}
+  w_nome_mae: {low: 0.0, high: 3.0, step: 0.05}
+  w_dt_nasc: {low: 0.0, high: 3.0, step: 0.05}
+  w_sexo: {low: 0.0, high: 1.0, step: 0.05}
+
+  p_nome: {low: 0.0, high: 2.0, step: 0.05}
+  p_nome_mae: {low: 0.0, high: 2.0, step: 0.05}
+  p_dt_nasc: {low: 0.0, high: 2.0, step: 0.05}
+  p_sexo: {low: 0.0, high: 1.0, step: 0.05}
+
+surrogate:
+  # How to score solutions not explicitly present in the experiments table.
+  # method: knn | exact
+  method: knn
+
+  # Used for knn only
+  k: 15
+
+  # If true, standardize gene columns before distance calc (helps when ranges differ a lot).
+  standardize: true
